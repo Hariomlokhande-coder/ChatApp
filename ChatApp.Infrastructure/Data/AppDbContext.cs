@@ -16,6 +16,7 @@ namespace ChatApp.Infrastructure.Data
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<MessageReadStatus> MessageReadStatuses { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -171,6 +172,26 @@ namespace ChatApp.Infrastructure.Data
                     .WithMany()
                     .HasForeignKey(n => n.MessageId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // ============================================================
+            // 🔐 REFRESH TOKEN Configuration
+            // ============================================================
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(rt => rt.RefreshTokenId);
+
+                // Index for efficient lookups
+                entity.HasIndex(rt => rt.Token).IsUnique();
+                entity.HasIndex(rt => new { rt.UserId, rt.ExpiresAt });
+
+                entity.Property(rt => rt.Token).HasMaxLength(500).IsRequired();
+                entity.Property(rt => rt.RevokeReason).HasMaxLength(500);
+
+                entity.HasOne(rt => rt.User)
+                    .WithMany(u => u.RefreshTokens)
+                    .HasForeignKey(rt => rt.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

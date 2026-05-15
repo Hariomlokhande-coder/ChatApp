@@ -34,5 +34,6 @@ namespace ChatApp.Domain.Entities
         public ICollection<GroupMember> GroupMemberships { get; set; } = new List<GroupMember>();
         public ICollection<MessageReadStatus> MessageReadStatuses { get; set; } = new List<MessageReadStatus>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

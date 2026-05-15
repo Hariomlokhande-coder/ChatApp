@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 //using ChatApp.API.Data;
 using ChatApp.Application.Services;
 using ChatApp.API.Hubs;
+using ChatApp.API.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +24,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 🔌 CONNECTION MANAGER
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
-// 🔥 SIGNALR
+// � INPUT SANITIZER SERVICE
+builder.Services.AddScoped<IInputSanitizer, InputSanitizer>();
+
+// �🔥 SIGNALR
 builder.Services.AddSignalR(options =>
 {
     var signalRConfig = builder.Configuration.GetSection("SignalR");
@@ -183,11 +187,24 @@ using (var scope = app.Services.CreateScope())
 
 // 🔥 MIDDLEWARE
 
+// 🔒 HTTPS ENFORCEMENT & HSTS
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts(); // Add Strict-Transport-Security header
+    app.UseHttpsRedirection(); // Redirect HTTP to HTTPS in production
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// 🔥 RATE LIMITING MIDDLEWARE
+var rateLimitConfig = app.Configuration.GetSection("RateLimit");
+int requestsPerMinute = rateLimitConfig.GetValue<int>("RequestsPerMinute", 60);
+int windowSizeSeconds = rateLimitConfig.GetValue<int>("WindowSizeSeconds", 60);
+app.UseRateLimiting(requestsPerMinute, windowSizeSeconds);
 
 // 🔥 GLOBAL ERROR HANDLER (NEW)
 app.UseExceptionHandler("/error");
