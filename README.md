@@ -1,6 +1,6 @@
 # ChatApp
 
-Production-style real-time chat application built with ASP.NET Core 8, SignalR, Entity Framework Core, SQL Server, JWT authentication, refresh tokens, and an integrated browser UI.
+Production-style real-time chat application built with ASP.NET Core 8, SignalR, Entity Framework Core, SQL Server, JWT authentication, refresh tokens, and dual frontend support (legacy CSHTML and modern Angular).
 
 This project supports:
 
@@ -13,6 +13,7 @@ This project supports:
 - User online/offline presence
 - Basic rate limiting and message throttling
 - Localization support for English and Japanese
+- Modern Angular 17 frontend with Standalone Components
 
 ## Table of Contents
 
@@ -46,8 +47,11 @@ This project supports:
 
 The app exposes REST APIs for auth, users, conversations, groups, notifications, and history, while live messages are sent and received through SignalR.
 
+**The project now includes both a legacy CSHTML frontend and a modern Angular 17 frontend.**
+
 ## Tech Stack
 
+### Backend
 - `.NET 8`
 - `ASP.NET Core MVC + Web API`
 - `SignalR`
@@ -56,10 +60,13 @@ The app exposes REST APIs for auth, users, conversations, groups, notifications,
 - `JWT Bearer Authentication`
 - `BCrypt` password hashing
 - `Swagger / OpenAPI`
-- `Vanilla JavaScript frontend`
 
-NuGet packages used in the API include:
+### Frontend
+- `Angular 17`
+- `TypeScript`
+- `Standalone Components`
 
+### NuGet packages
 - `BCrypt.Net-Next`
 - `Microsoft.AspNetCore.Authentication.JwtBearer`
 - `Microsoft.EntityFrameworkCore.SqlServer`
@@ -131,6 +138,11 @@ ChatApp/
 |-- ChatApp.Infrastructure/
 |   |-- Data/
 |   |-- Migrations/
+|-- frontend/
+    |-- src/
+    |-- public/
+    |-- angular.json
+    |-- package.json
 ```
 
 ## Core Features
@@ -305,6 +317,7 @@ Configured for local development, including:
 - `Visual Studio 2022` or `VS Code`
 - `.NET 8 SDK`
 - `SQL Server LocalDB` or another SQL Server instance
+- `Node.js 18+` and `npm` (for Angular frontend)
 
 ### 1. Clone the repository
 
@@ -313,17 +326,19 @@ git clone <your-repo-url>
 cd ChatApp
 ```
 
-### 2. Update the connection string if needed
+### 2. Backend Setup
+
+#### Update the connection string if needed
 
 Edit [`ChatApp.API/appsettings.json`](/e:/ChatApp/ChatApp/ChatApp.API/appsettings.json) and change `ConnectionStrings:DefaultConnection` if you are not using LocalDB.
 
-### 3. Restore dependencies
+#### Restore dependencies
 
 ```powershell
 dotnet restore ChatApp.slnx
 ```
 
-### 4. Apply database migrations
+#### Apply database migrations
 
 From the repository root:
 
@@ -331,7 +346,7 @@ From the repository root:
 dotnet ef database update --project .\ChatApp.Infrastructure\ChatApp.Infrastructure.csproj --startup-project .\ChatApp.API\ChatApp.API.csproj
 ```
 
-### 5. Run the application
+#### Run the application
 
 ```powershell
 dotnet run --project .\ChatApp.API\ChatApp.API.csproj
@@ -342,11 +357,36 @@ By default, launch settings include:
 - `http://localhost:5103`
 - `https://localhost:7229`
 
-### 6. Open the app
+### 3. Frontend Setup (Angular)
 
-- Chat UI: `http://localhost:5103/`
-- Swagger in development: `http://localhost:5103/swagger`
-- Health check: `http://localhost:5103/health`
+#### Navigate to frontend directory
+
+```bash
+cd frontend
+```
+
+#### Install dependencies
+
+```bash
+npm install
+```
+
+#### Start the development server
+
+```bash
+ng serve
+# or
+npm start
+```
+
+The Angular app will be available at `http://localhost:4200/`
+
+### 4. Open the app
+
+- **Vanilla CSHTML UI:** `http://localhost:5103/`
+- **Angular Frontend:** `http://localhost:4200/`
+- **Swagger (Development):** `http://localhost:5103/swagger`
+- **Health Check:** `http://localhost:5103/health`
 
 ## Database and Migrations
 
@@ -555,9 +595,11 @@ The chat UI lets users switch language using query parameters:
 
 ## Frontend Notes
 
-The browser UI is served from the API project itself.
+### Legacy CSHTML Frontend
 
-Key frontend files:
+The legacy browser UI is served from the API project itself and remains available for backward compatibility.
+
+Key legacy frontend files:
 
 - [`Views/Home/Chat.cshtml`](/e:/ChatApp/ChatApp/ChatApp.API/Views/Home/Chat.cshtml)
 - [`wwwroot/js/main.js`](/e:/ChatApp/ChatApp/ChatApp.API/wwwroot/js/main.js)
@@ -566,11 +608,40 @@ Key frontend files:
 - [`wwwroot/js/auth.js`](/e:/ChatApp/ChatApp/ChatApp.API/wwwroot/js/auth.js)
 - [`wwwroot/css/chat.css`](/e:/ChatApp/ChatApp/ChatApp.API/wwwroot/css/chat.css)
 
-The default route points to:
+Access at:
 
-- `/Home/Chat`
+- `/Home/Chat` or `/`
 
-which is also mapped as the app root `/`.
+### Modern Angular Frontend
+
+An Angular 17 frontend is also included under the `/frontend` directory. The Angular app communicates with the ASP.NET Core backend APIs and SignalR hub.
+
+**Key features:**
+
+- Built with Angular 17 and TypeScript
+- Standalone Components architecture
+- Full SignalR integration for real-time messaging
+- Modern reactive forms with RxJS
+- Type-safe API communication
+- Production-ready build configuration
+
+**Getting started with Angular:**
+
+```bash
+cd frontend
+npm install
+ng serve
+```
+
+Navigate to `http://localhost:4200/` to access the Angular application.
+
+**Building for production:**
+
+```bash
+ng build --configuration production
+```
+
+The build artifacts will be stored in the `dist/` directory.
 
 ## Health Checks and Swagger
 
@@ -627,6 +698,15 @@ If refresh stops working:
 
 Swagger is only enabled for the `Development` environment.
 
+### Angular Frontend Connection Issues
+
+If the Angular frontend cannot connect to the backend:
+
+- ensure the backend is running on the configured port (default: `https://localhost:7229`)
+- verify CORS is properly configured in `appsettings.json` to allow `http://localhost:4200`
+- check that the Angular environment configuration points to the correct API base URL
+- inspect browser console for network errors
+
 ## Future Improvements
 
 Possible next enhancements:
@@ -639,7 +719,8 @@ Possible next enhancements:
 - add unit and integration test projects
 - improve search and unread count APIs
 - add Docker support and CI/CD pipeline
+- expand Angular feature set with additional UI components
 
 ## Summary
 
-`ChatApp` is a strong base for a real-time messaging system in .NET. It combines MVC, REST APIs, SignalR, EF Core, authentication, notifications, group management, and localization in a single solution that is straightforward to run locally and extend for larger deployments.
+`ChatApp` is a strong base for a real-time messaging system in .NET. It combines MVC, REST APIs, SignalR, EF Core, authentication, notifications, group management, and localization in a single backend, with dual frontend options—both legacy CSHTML and modern Angular—providing flexibility for different deployment scenarios and modernization timelines.
