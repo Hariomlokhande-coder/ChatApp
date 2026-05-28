@@ -1,0 +1,41 @@
+<div class="layout-container">
+  <mat-toolbar class="main-toolbar" [class.mobile-hidden]="isChatSelected()">
+    <div class="brand">ChatApp</div>
+    <span class="spacer"></span>
+    
+    @if (currentUser()) {
+      <div class="user-profile-btn" [matMenuTriggerFor]="userMenu">
+        <span class="user-name">{{ currentUser()?.username }}</span>
+        @if (currentUser()?.profilePictureUrl) {
+          <img [src]="currentUser()?.profilePictureUrl" alt="Avatar" class="user-avatar-header">
+        } @else {
+          <mat-icon>account_circle</mat-icon>
+        }
+      </div>
+      
+      <mat-menu #userMenu="matMenu" xPosition="before" class="glass">
+        <button mat-menu-item (click)="isProfileSettingsOpen = true">
+          <mat-icon>person</mat-icon>
+          <span>My Profile</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="text-danger">
+          <mat-icon color="warn">exit_to_app</mat-icon>
+          <span style="color: #ef4444;">Logout</span>
+        </button>
+      </mat-menu>
+    }
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav-content class="main-content">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+  <app-profile-settings [isOpen]="isProfileSettingsOpen" (close)="isProfileSettingsOpen = false"></app-profile-settings>
+</div>

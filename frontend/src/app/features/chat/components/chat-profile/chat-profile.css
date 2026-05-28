@@ -1,0 +1,258 @@
+:host {
+  display: contents;
+}
+
+.profile-sidebar {
+  width: 400px;
+  background-color: #ffffff;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 40;
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  height: 100%;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.profile-header {
+  height: 60px;
+  padding: 0 16px;
+  background-color: #ebedf0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #111b21;
+}
+
+.profile-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f0f2f5;
+}
+
+.profile-main-info {
+  background-color: #ffffff;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.profile-main-info img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-main-info h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
+  color: #111b21;
+}
+
+.profile-main-info p {
+  margin: 5px 0 0;
+  color: #667781;
+  font-size: 16px;
+}
+
+.profile-section {
+  background-color: #ffffff;
+  padding: 14px 30px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.profile-section label {
+  font-size: 14px;
+  color: #667781;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.profile-section p {
+  font-size: 16px;
+  color: #111b21;
+  margin: 0;
+}
+
+.media-placeholder {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #667781;
+  cursor: pointer;
+}
+
+.profile-actions {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  margin-bottom: 20px;
+}
+
+.danger-btn {
+  color: #ea0038 !important;
+  text-align: left !important;
+  padding: 15px 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  border-radius: 0 !important;
+}
+
+/* Group Members Styling */
+.group-members-section {
+  padding: 18px 24px !important;
+  background: #ffffff;
+}
+
+.members-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  color: #667781;
+  font-size: 14px;
+}
+
+.spin-icon {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Thin modern scrollbar for members list */
+.members-list::-webkit-scrollbar {
+  width: 4px;
+}
+.members-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.members-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.member-item:hover {
+  background: #f8fafc;
+}
+
+.member-avatar-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #f1f5f9;
+}
+
+.member-online-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 11px;
+  height: 11px;
+  background-color: #22c55e;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+}
+
+.member-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.member-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.member-status {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.member-status.online {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.admin-badge {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: 1px solid #e0e7ff;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 1200px) {
+  .profile-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-sidebar {
+    width: 100% !important;
+    border-left: none !important;
+  }
+}

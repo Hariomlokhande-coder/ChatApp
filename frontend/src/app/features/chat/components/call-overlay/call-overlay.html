@@ -1,0 +1,37 @@
+@if (callState() !== 'idle') {
+  <div class="call-overlay">
+    <div class="call-card">
+      <div class="user-info">
+        <div class="avatar">?</div>
+        <h2>{{ remoteUser()?.username || 'Unknown User' }}</h2>
+        <p>{{ statusText() }}</p>
+      </div>
+
+      <div class="video-container" [class.hidden]="callState() !== 'connected'">
+        <div id="remote-player" class="remote-video"></div>
+        <div id="local-player" class="local-video"></div>
+      </div>
+
+      <div class="controls">
+        @if (callState() === 'incoming') {
+          <button mat-fab color="primary" (click)="answer()">
+            <mat-icon>call</mat-icon>
+          </button>
+          <button mat-fab color="warn" (click)="reject()">
+            <mat-icon>call_end</mat-icon>
+          </button>
+        } @else {
+          <button mat-mini-fab (click)="toggleVideo()">
+            <mat-icon>{{ videoEnabled ? 'videocam' : 'videocam_off' }}</mat-icon>
+          </button>
+          <button mat-mini-fab (click)="toggleAudio()">
+            <mat-icon>{{ audioEnabled ? 'mic' : 'mic_off' }}</mat-icon>
+          </button>
+          <button mat-fab color="warn" (click)="end()">
+            <mat-icon>call_end</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}

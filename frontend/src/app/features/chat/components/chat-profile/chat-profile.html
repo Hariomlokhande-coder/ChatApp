@@ -1,0 +1,81 @@
+<div class="profile-sidebar">
+  <div class="profile-header">
+    <button mat-icon-button (click)="close.emit()"><mat-icon>close</mat-icon></button>
+    <span>Contact Info</span>
+  </div>
+  <div class="profile-content">
+    <div class="profile-main-info">
+      <img [src]="selectedChat.profilePictureUrl || 'https://ui-avatars.com/api/?background=f1f5f9&color=6366f1&name=' + (selectedChat.username || selectedChat.name)">
+      <h2>{{ selectedChat.username || selectedChat.name }}</h2>
+      <p>{{ selectedChat.email || (selectedChat.type === 'group' || selectedChat.groupId ? (groupDetails?.group?.memberCount || selectedChat.memberCount || 0) + ' members' : 'No email provided') }}</p>
+    </div>
+    
+    <mat-divider></mat-divider>
+    
+    <div class="profile-section">
+      <label>{{ selectedChat.type === 'group' || selectedChat.groupId ? 'Group Description' : 'About' }}</label>
+      <p>{{ selectedChat.description || (selectedChat.type === 'group' || selectedChat.groupId ? 'No description provided' : 'Hey there! I am using ChatApp') }}</p>
+    </div>
+
+    <!-- Dynamic Group Members List -->
+    @if (selectedChat.type === 'group' || selectedChat.groupId) {
+      <mat-divider></mat-divider>
+      
+      <div class="profile-section group-members-section">
+        <label>Group Members ({{ groupDetails?.members?.length || selectedChat.memberCount || 0 }})</label>
+        
+        @if (isLoading) {
+          <div class="members-loading">
+            <mat-icon class="spin-icon">sync</mat-icon>
+            <span>Loading members...</span>
+          </div>
+        } @else if (groupDetails?.members) {
+          <div class="members-list">
+            @for (member of groupDetails.members; track member.userId) {
+              <div class="member-item">
+                <div class="member-avatar-wrapper">
+                  <img class="member-avatar" [src]="'https://ui-avatars.com/api/?background=random&color=fff&name=' + member.username" />
+                  @if (member.isOnline) {
+                    <span class="member-online-dot"></span>
+                  }
+                </div>
+                <div class="member-info">
+                  <span class="member-name">{{ member.username }}</span>
+                  <span class="member-status" [class.online]="member.isOnline">
+                    {{ member.isOnline ? 'Online' : 'Offline' }}
+                  </span>
+                </div>
+                @if (member.role === 'Admin') {
+                  <span class="admin-badge">Admin</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <mat-divider></mat-divider>
+
+    <div class="profile-section" *ngIf="!(selectedChat.type === 'group' || selectedChat.groupId)">
+      <label>Media, Links and Docs</label>
+      <div class="media-placeholder">
+        <span>No media found</span>
+        <mat-icon>chevron_right</mat-icon>
+      </div>
+    </div>
+
+    <mat-divider *ngIf="!(selectedChat.type === 'group' || selectedChat.groupId)"></mat-divider>
+
+    <div class="profile-actions">
+      <button mat-button class="danger-btn">
+        <mat-icon>{{ selectedChat.type === 'group' || selectedChat.groupId ? 'exit_to_app' : 'block' }}</mat-icon>
+        {{ selectedChat.type === 'group' || selectedChat.groupId ? 'Exit Group' : 'Block ' + (selectedChat.username || selectedChat.name) }}
+      </button>
+      <button mat-button class="danger-btn" *ngIf="!(selectedChat.type === 'group' || selectedChat.groupId)">
+        <mat-icon>thumb_down</mat-icon>
+        Report {{ selectedChat.username || selectedChat.name }}
+      </button>
+    </div>
+  </div>
+</div>

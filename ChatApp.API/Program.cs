@@ -12,7 +12,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-// 🔥 DATABASE
+//  DATABASE
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -21,13 +21,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
         }));
 
-// 🔌 CONNECTION MANAGER
+//  CONNECTION MANAGER
 builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
-// � INPUT SANITIZER SERVICE
+// INPUT SANITIZER SERVICE
 builder.Services.AddScoped<IInputSanitizer, InputSanitizer>();
 
-// �🔥 SIGNALR
+//  SIGNALR
 builder.Services.AddSignalR(options =>
 {
     var signalRConfig = builder.Configuration.GetSection("SignalR");
@@ -38,7 +38,7 @@ builder.Services.AddSignalR(options =>
 });
 
 
-// 🔥 CORS
+// CORS
 builder.Services.AddCors(options =>
 {
     var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
@@ -51,7 +51,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 🔐 JWT AUTHENTICATION
+// JWT AUTHENTICATION
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
 builder.Services.AddAuthentication(options =>
@@ -73,6 +73,7 @@ builder.Services.AddAuthentication(options =>
 
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
+        
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
     };
@@ -100,7 +101,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 🔥 CONTROLLERS & SWAGGER
+//CONTROLLERS & SWAGGER
 builder.Services.AddControllersWithViews();
 //add resources multilanguage
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
@@ -115,7 +116,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 //end of multilanguage
 
-// 🔥 SESSION & CACHE
+// SESSION & CACHE
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -166,7 +167,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-// 🔥 HEALTH CHECK (NEW)
+//HEALTH CHECK (NEW)
 
 builder.Services.AddHealthChecks();
 
@@ -185,9 +186,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 
-// 🔥 MIDDLEWARE
+// MIDDLEWARE
 
-// 🔒 HTTPS ENFORCEMENT & HSTS
+//  HTTPS ENFORCEMENT & HSTS
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts(); // Add Strict-Transport-Security header
@@ -200,7 +201,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// 🔥 RATE LIMITING MIDDLEWARE
+//  RATE LIMITING MIDDLEWARE
 var rateLimitConfig = app.Configuration.GetSection("RateLimit");
 int requestsPerMinute = rateLimitConfig.GetValue<int>("RequestsPerMinute", 60);
 int windowSizeSeconds = rateLimitConfig.GetValue<int>("WindowSizeSeconds", 60);
@@ -229,15 +230,15 @@ app.UseSession(); // Authentication aur Authorization ke baad, Controllers se pe
 // Controllers (API + MVC Views)
 app.MapControllers();
 
-// 🔥 MVC Default Route → Home/Chat
+//  MVC Default Route → Home/Chat
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Chat}/{id?}");
 
-// 🔥 SignalR Hub
+//  SignalR Hub
 app.MapHub<ChatHub>("/chatHub");
 
-// 🔥 HEALTH CHECK ENDPOINT
+// HEALTH CHECK ENDPOINT
 app.MapHealthChecks("/health");
 
 app.Run();

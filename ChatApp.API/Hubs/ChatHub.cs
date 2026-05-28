@@ -292,7 +292,7 @@ namespace ChatApp.API.Hubs
 
         private async Task Broadcast(Guid tid, bool isG, string ev, bool typing)
         {
-            var data = new { UserId = GetUserId(), Username = GetUsername(), IsTyping = typing, Time = DateTime.UtcNow };
+            var data = new { UserId = GetUserId(), Username = GetUsername(), IsTyping = typing, Time = DateTime.UtcNow, GroupId = isG ? tid : (Guid?)null };
             if (isG)
             {
                 var members = await _db.GroupMembers
@@ -306,6 +306,27 @@ namespace ChatApp.API.Hubs
             {
                 await Send(tid, ev, data);
             }
+        }
+
+        
+        // ================= CALLING =================
+        public async Task StartCall(Guid tid, string type)
+        {
+            var uid = GetUserId();
+            var name = GetUsername();
+            await Send(tid, "CallRequested", new { UserId = uid, Username = name, Type = type });
+        }
+
+        public async Task AcceptCall(Guid tid)
+        {
+            var uid = GetUserId();
+            await Send(tid, "CallAccepted", new { UserId = uid });
+        }
+
+        public async Task RejectCall(Guid tid)
+        {
+            var uid = GetUserId();
+            await Send(tid, "CallRejected", new { UserId = uid });
         }
 
         // ================= HELPERS =================

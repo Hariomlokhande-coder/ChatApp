@@ -1,0 +1,117 @@
+<div class="chat-window-container" [class.mobile-hidden]="!selectedChat">
+  <div class="chat-window">
+    @if (selectedChat) {
+    <div class="window-header">
+      <div class="header-left" (click)="toggleProfile.emit()" style="cursor: pointer;">
+        <button mat-icon-button class="mobile-only" (click)="$event.stopPropagation(); closeChat.emit()"
+          style="margin-right: 5px;">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <img
+          [src]="selectedChat.profilePictureUrl || 'https://ui-avatars.com/api/?name=' + (selectedChat.username || selectedChat.name)">
+        <div class="header-name">
+          <h4>{{ selectedChat.username || selectedChat.name }}</h4>
+          <p>
+            {{ typingUser ? typingUser + ' is typing...' : 
+               (selectedChat.type === 'group' || selectedChat.groupId ? 
+                (selectedChat.memberCount || 0) + ' members' : 
+                (selectedChat.isOnline ? 'Online' : 'Away')) 
+            }}
+          </p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button mat-icon-button (click)="startVideoCall.emit()"><mat-icon>videocam</mat-icon></button>
+        <button mat-icon-button (click)="startAudioCall.emit()"><mat-icon>call</mat-icon></button>
+        <button mat-icon-button style="margin-left: 10px;"><mat-icon>search</mat-icon></button>
+        <button mat-icon-button (click)="toggleProfile.emit()"><mat-icon>more_vert</mat-icon></button>
+      </div>
+    </div>
+
+    <div class="messages-list" #scrollContainer>
+      @if (hasMoreMessages) {
+        <div style="display: flex; justify-content: center; padding: 10px 0; margin-bottom: 10px;">
+          <button mat-stroked-button (click)="loadMore.emit()" style="border-radius: 20px; font-size: 13px; color: #4f46e5; border-color: #e2e8f0; background: white; display: flex; align-items: center; justify-content: center; height: 32px; padding: 0 16px;">
+            <mat-icon style="font-size: 18px; width: 18px; height: 18px; margin-right: 5px;">history</mat-icon>
+            Load Older Messages
+          </button>
+        </div>
+      }
+      @for (msg of messages; track msg.messageId; let idx = $index) {
+        @if (shouldShowDateDivider(idx)) {
+          <div class="date-divider">
+            <span class="date-divider-text">{{ getDateDividerText(msg.createdAt) }}</span>
+          </div>
+        }
+      <div class="msg-row" [class.sent]="msg.senderId === currentUserId"
+        [class.received]="msg.senderId !== currentUserId">
+        <div class="bubble-wrapper" (click)="toggleReactionPopover(msg.messageId, $event)" style="cursor: pointer;">
+          <div class="reactions-popover-container" [class.show]="activeReactionMessageId === msg.messageId" (click)="$event.stopPropagation()">
+            <app-message-reactions (selectEmoji)="onSelectEmoji(msg.messageId, $event)"></app-message-reactions>
+          </div>
+          <div class="bubble">
+            @if (selectedChat.type === 'group' && msg.senderId !== currentUserId) {
+            <span style="font-size: 13px; font-weight: 600; color: #e542a3; margin-bottom: 2px;">
+              {{ msg.senderName }}
+            </span>
+            }
+            <div class="bubble-content">{{ msg.content }}</div>
+            
+            @if (msg.reactions && msg.reactions.length > 0) {
+              <div class="bubble-reactions-badges">
+                @for (reaction of msg.reactions; track reaction) {
+                  <span class="reaction-badge" (dblclick)="removeReaction(msg.messageId, reaction, $event)" title="Double click to remove reaction">{{ reaction }}</span>
+                }
+              </div>
+            }
+
+            <div class="bubble-meta">
+              <span class="bubble-time">{{ msg.createdAt | date:'h:mm a' }}</span>
+              @if (msg.senderId === currentUserId) {
+              <mat-icon class="bubble-status" [style.color]="msg.deliveryStatus === 2 ? '#53bdeb' : '#8696a0'">
+                {{ msg.deliveryStatus >= 1 ? 'done_all' : 'done' }}
+              </mat-icon>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="window-footer">
+      <div class="footer-actions">
+        <button mat-icon-button><mat-icon>mood</mat-icon></button>
+        <button mat-icon-button style="margin-left: 5px;"><mat-icon>attach_file</mat-icon></button>
+      </div>
+      <div class="footer-input">
+        <input type="text" placeholder="Type a message" [(ngModel)]="messageText"
+          (keydown.enter)="$event.preventDefault(); onSendMessage()" (input)="onTyping()">
+      </div>
+      <div class="footer-actions">
+        @if (messageText.trim()) {
+        <button mat-icon-button (click)="onSendMessage()" class="send-btn-circle">
+          <mat-icon>send</mat-icon>
+        </button>
+        } @else {
+        <button mat-icon-button class="send-btn-circle">
+          <mat-icon>mic</mat-icon>
+        </button>
+        }
+      </div>
+    </div>
+    } @else {
+    <div class="empty-view">
+      <div class="empty-content">
+        <img src="https://static.whatsapp.net/rsrc.php/v3/y6/r/wa669ae5y9Z.png" alt="Welcome">
+        <h1>ChatApp</h1>
+        <p>Connect with your friends and groups instantly.<br>Start a conversation to see it here.</p>
+      </div>
+      <div class="empty-footer">
+        <mat-icon>lock</mat-icon>
+        End-to-end encrypted
+      </div>
+    </div>
+    }
+  </div>
+</div>
