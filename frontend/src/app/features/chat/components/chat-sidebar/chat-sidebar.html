@@ -1,0 +1,68 @@
+<div class="sidebar" [class.mobile-hidden]="selectedChat">
+  <div class="sidebar-tabs top-tabs">
+    <div class="tab-item" [class.active]="activeTab === 'chats'" (click)="setTab('chats')">
+      <mat-icon>{{ activeTab === 'chats' ? 'chat' : 'chat_outline' }}</mat-icon>
+      <span>Chats</span>
+    </div>
+    <div class="tab-item" [class.active]="activeTab === 'channels'" (click)="setTab('channels')">
+      <mat-icon>{{ activeTab === 'channels' ? 'groups' : 'groups_outline' }}</mat-icon>
+      <span>Channels</span>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <div class="search-inner">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Search chats..." [(ngModel)]="searchQuery">
+    </div>
+  </div>
+
+  <div class="chat-list">
+    @if (activeTab === 'chats') {
+      @for (user of filteredUsers; track user.userId) {
+        <div class="chat-item" (click)="selectUser(user)" [class.active]="selectedChat?.userId === user.userId">
+          <div class="item-avatar">
+            <img [src]="user.profilePictureUrl || 'https://ui-avatars.com/api/?name=' + user.username">
+            @if (user.isOnline) {
+              <span class="online-dot"></span>
+            }
+          </div>
+          <div class="item-info">
+            <div class="item-top">
+              <span class="item-name">{{ user.username }}</span>
+              <span class="item-time">12:34 PM</span>
+            </div>
+            <div class="item-bottom">
+              <span class="item-msg">Click to start chatting...</span>
+              @if (unreadCounts[user.userId]) {
+                <span class="badge">{{ unreadCounts[user.userId] }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      @for (group of filteredGroups; track group.groupId) {
+        <div class="chat-item" (click)="selectGroup(group)" [class.active]="selectedChat?.groupId === group.groupId">
+          <div class="item-avatar">
+            <div style="width: 49px; height: 49px; border-radius: 50%; background: #dfe5e7; display: flex; align-items: center; justify-content: center; color: #54656f;">
+              <mat-icon>groups</mat-icon>
+            </div>
+          </div>
+          <div class="item-info">
+            <div class="item-top">
+              <span class="item-name">{{ group.name }}</span>
+              <span class="item-time">Today</span>
+            </div>
+            <div class="item-bottom">
+              <span class="item-msg">{{ group.memberCount }} members</span>
+              @if (unreadCounts[group.groupId]) {
+                <span class="badge">{{ unreadCounts[group.groupId] }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

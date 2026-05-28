@@ -1,0 +1,22 @@
+<div class="chat-wrapper">
+  <!-- Sidebar -->
+  <app-chat-sidebar [users]="users()" [groups]="groups()" [activeTab]="activeTab()" [selectedChat]="selectedChat()"
+    [unreadCounts]="unreadCounts()" (tabChange)="activeTab.set($event)" (userSelected)="selectUser($event)"
+    (groupSelected)="selectGroup($event)">
+  </app-chat-sidebar>
+
+  <!-- Main Chat Window Area -->
+  <app-chat-window [selectedChat]="selectedChat()" [messages]="messages()" [currentUserId]="currentUserId"
+    [typingUser]="typingUser()" [hasMoreMessages]="hasMoreMessages()" (messageSent)="sendMessage($event)" (typing)="onTyping()"
+    (startVideoCall)="startVideoCall()" (startAudioCall)="startAudioCall()" (toggleProfile)="toggleProfile()"
+    (closeChat)="closeChat()"
+    (loadMore)="loadMoreHistory()"
+    (reactionAdded)="addReaction($event)">
+  </app-chat-window>
+
+  <!-- Profile Info Sidebar (Right Side) -->
+  @if (showProfile() && selectedChat()) {
+  <app-chat-profile [selectedChat]="selectedChat()" (close)="toggleProfile()">
+  </app-chat-profile>
+  }
+</div>

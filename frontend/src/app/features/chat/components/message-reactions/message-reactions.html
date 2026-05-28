@@ -1,0 +1,7 @@
+<div class="reactions-popover">
+  @for (emoji of emojis; track emoji) {
+    <button class="emoji-btn" (click)="selectEmoji.emit(emoji)">
+      {{ emoji }}
+    </button>
+  }
+</div>
