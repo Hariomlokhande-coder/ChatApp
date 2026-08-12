@@ -66,7 +66,7 @@ namespace ChatApp.API.Hubs
                 Time = DateTime.UtcNow
             });
 
-            // 🔥 JOIN GROUPS ON CONNECT (for SignalR rooms)
+            // JOIN GROUPS ON CONNECT (for SignalR rooms)
             var userGroups = await _db.GroupMembers
                 .Where(x => x.UserId == uid.Value && !x.IsDeleted)
                 .Select(x => x.GroupId)
@@ -85,10 +85,10 @@ namespace ChatApp.API.Hubs
 
             _conn.RemoveConnection(Context.ConnectionId);
 
-            // 🔥 FIX: Wait longer to allow reconnect (tab refresh / network fluctuation)
+            // FIX: Wait longer to allow reconnect (tab refresh / network fluctuation)
             await Task.Delay(7000);
 
-            // 🔥 DOUBLE CHECK (avoid false offline)
+            // DOUBLE CHECK (avoid false offline)
             if (!_conn.IsOnline(uid.Value))
             {
                 // Extra safety delay
@@ -202,7 +202,7 @@ namespace ChatApp.API.Hubs
 
             var resp = Map(msg, name ?? "System", null, group?.Name);
             
-            // 🔥 Use SignalR Groups for efficient delivery
+            // Use SignalR Groups for efficient delivery
             await Clients.Group(r.GroupId.ToString()).SendAsync("ReceiveGroupMessage", resp);
             await Clients.Caller.SendAsync("MessageSent", resp);
         }
@@ -262,7 +262,7 @@ namespace ChatApp.API.Hubs
                 if (msg != null) msg.DeliveryStatus = 2;
             }
 
-            // 🔥 FIX: Also mark the associated notifications as read
+            // FIX: Also mark the associated notifications as read
             var notifications = await _db.Notifications
                 .Where(n => mids.Contains(n.MessageId) && n.UserId == uid && !n.IsRead)
                 .ToListAsync();

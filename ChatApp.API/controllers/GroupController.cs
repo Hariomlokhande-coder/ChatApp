@@ -6,7 +6,6 @@ using ChatApp.Domain.Entities;
 using ChatApp.Application.DTOs;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
-
 namespace ChatApp.API.Controllers
 {
     [ApiController]
@@ -24,7 +23,6 @@ namespace ChatApp.API.Controllers
             _hub = hub;
             _conn = conn;
         }
-
         [HttpPost]
         public async Task<IActionResult> CreateGroup([FromBody] CreateGroupRequest r)
         {
@@ -358,18 +356,17 @@ namespace ChatApp.API.Controllers
             if (group == null)
                 return NotFound();
 
-            // ✅ STEP 1: Creator → direct allow
+            //STEP 1: Creator → direct allow
             if (group.CreatedBy == uid.Value)
             {
                 group.IsDeleted = true;
                 group.UpdatedAt = DateTime.UtcNow;
-                group.UpdatedBy = uid.Value;
-
+                group.UpdatedBy = uid.Value;                                                                                                                                                                                           
                 await _context.SaveChangesAsync();
                 return Ok(new { message = "Deleted successfully" });
             }
 
-            // ✅ STEP 2: Only Admin (non-creator case)
+            // STEP 2: Only Admin (non-creator case)
             var member = await GetM(groupId, uid.Value);
 
             if (member == null || member.Role != "Admin")
